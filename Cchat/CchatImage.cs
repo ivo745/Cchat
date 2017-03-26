@@ -52,51 +52,32 @@ namespace Cchat
             return ImageFormat.Unknown;
         }
 
-        private static Image Image;
-
-        public static Image GetImage()
-        {
-            if (Image == null)
-                throw new ArgumentNullException(null);
-
-            return Image;
-        }
-
-        private static byte[] ImageData;
-
-        public static byte[] GetImageData()
-        {
-            if (ImageData == null)
-                throw new ArgumentNullException(null);
-
-            return (byte[])ImageData.Clone();
-        }
-
-        public static void ConvertImageToBytes(Image image)
+        public static byte[] GetByteArrayFromImage(Image image)
         {
             if (image == null)
-                return;
+                return null;
 
             using (MemoryStream mStream = new MemoryStream())
             {
                 image.Save(mStream, image.RawFormat);
-                byte[] bytes = mStream.ToArray();
-                ImageData = bytes;
+                return mStream.ToArray();
             }
         }
 
-        public static void ConvertBytesToImage(byte[] data)
+        public static Image GetImageFromByteArray(byte[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                return null;
 
             using (MemoryStream ms = new MemoryStream())
             {
                 ms.Write(data, 0, data.Length);
                 if (GetImageFormat(data) == ImageFormat.Png)
                 {
-                    Image = Image.FromStream(ms, true, true);
+                    return Image.FromStream(ms, true, true);
                 }
+
+                return null;
             }
         }
     }

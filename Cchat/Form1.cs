@@ -47,7 +47,7 @@ namespace Cchat
         private CefSettings cefSettings;
 
         // Create browser instance
-        public void InitBrowser()
+        private void InitBrowser()
         {
             cefSettings = new CefSettings();
             Cef.Initialize(cefSettings);
@@ -100,12 +100,12 @@ namespace Cchat
         private void PrintImage(Image image)
         {
             // Clean up memory of old image
-            if (pictureBox1.Image != null)
+            if (pictureBox.Image != null)
             {
-                pictureBox1.Image.Dispose();
-                pictureBox1.Image = null;
+                pictureBox.Image.Dispose();
+                pictureBox.Image = null;
             }
-            pictureBox1.Image = image;
+            pictureBox.Image = image;
         }
 
         // Print text written in textbox to chat window
@@ -140,7 +140,7 @@ namespace Cchat
         {
             try
             {
-                server = new TcpListener(IPAddress.Any, int.Parse(startServerPortBox.Text, CultureInfo.InvariantCulture));
+                server = new TcpListener(IPAddress.Any, int.Parse(startServerPortBox.Text, NumberFormatInfo.InvariantInfo));
                 server.Start();
                 client = server.AcceptTcpClient();
                 streamReader = new StreamReader(client.GetStream());
@@ -163,7 +163,7 @@ namespace Cchat
             try
             {
                 client = new TcpClient();
-                IPEndPoint IP_End = new IPEndPoint(IPAddress.Parse(connectServerIPBox.Text), int.Parse(connectServerPortBox.Text, CultureInfo.InvariantCulture));
+                IPEndPoint IP_End = new IPEndPoint(IPAddress.Parse(connectServerIPBox.Text), int.Parse(connectServerPortBox.Text, NumberFormatInfo.InvariantInfo));
                 client.Connect(IP_End);
                 if (client.Connected)
                 {
@@ -192,45 +192,16 @@ namespace Cchat
             Disconnect();
         }
 
-        private void InterpetData(string data)
+        // Return wether the input of size int contains only numbers
+        private static bool IsNumeric(object input)
         {
-            // Check what type of data we have
-            dynamic type = DataType(data);
-            if (type == typeof(int))
-            {
-                // Retrieve buffer length
-                int length = int.Parse(data);
-                // Retrieve bytes from data stream
-                byte[] bytes = binaryReader.ReadBytes(length);
-                // Insert and convert bytes back to Image
-                CchatImage.ConvertBytesToImage(bytes);
-                // Retrieve the Image
-                PrintImage(CchatImage.GetImage());
-            }
-            else if (type == typeof(string))
-            {
-                if (data.Contains("sender:"))
-                {
-                    PrintText(data);
-                    //CchatLog.WriteToLog(MSG_PREFIX_RECEIVER + data);
-                }
+            int retNum;
 
-                if (data == "/disconnect")
-                {
-                    Disconnect();
-                    return;
-                }
-            }
-        }
-
-        private static bool IsNumeric(object Expression)
-        {
-            double retNum;
-
-            bool isNum = double.TryParse(Convert.ToString(Expression, NumberFormatInfo.InvariantInfo), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out retNum);
+            bool isNum = int.TryParse(Convert.ToString(input, NumberFormatInfo.InvariantInfo), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out retNum);
             return isNum;
         }
 
+        // Return the type of data
         private static Type DataType(object data)
         {
             if (IsNumeric(data))
@@ -241,6 +212,36 @@ namespace Cchat
                 return typeof(string);
 
             return null;
+        }
+
+        // Determine type of data received and retrieve the information sent for display
+        private void InterpetData(string data)
+        {
+            // Check what type of data we have
+            dynamic type = DataType(data);
+
+            if (type == typeof(int))
+            {
+                // Retrieve buffer length
+                int length = int.Parse(data, NumberFormatInfo.InvariantInfo);
+                // Retrieve bytes from data stream
+                byte[] bytes = binaryReader.ReadBytes(length);
+                // Convert bytes to image and display it
+                PrintImage(CchatImage.GetImageFromByteArray(bytes));
+            }
+            else if (type == typeof(string))
+            {
+                if (data.Contains("sender:"))
+                {
+                    PrintText(data);
+                    //CchatLog.WriteToLog(MSG_PREFIX_RECEIVER + data);
+                }
+                else if (data == "/disconnect")
+                {
+                    Disconnect();
+                    return;
+                }
+            }
         }
 
         private void dataReceiver_DoWork(object sender, DoWorkEventArgs e)
@@ -265,13 +266,13 @@ namespace Cchat
                 if (image_to_send != null)
                 {
                     // Convert Image to bytes
-                    CchatImage.ConvertImageToBytes(image_to_send);
+                    byte[] imageBytes = CchatImage.GetByteArrayFromImage(image_to_send);
                     // Store length of the byte array of the Image
-                    string imageLength = "" + CchatImage.GetImageData().Length;
+                    string imageLength = "" + imageBytes.Length;
                     // Send the length
                     streamWriter.WriteLine(imageLength);
                     // Send the Image
-                    binaryWriter.Write(CchatImage.GetImageData(), 0, CchatImage.GetImageData().Length);
+                    binaryWriter.Write(imageBytes, 0, imageBytes.Length);
                     // Show Image to self
                     PrintImage(image_to_send);
                     // Clean up old image to send
@@ -299,21 +300,21 @@ namespace Cchat
             }
         }
 
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                if (!string.IsNullOrWhiteSpace(textBox1.Text))
+                if (!string.IsNullOrWhiteSpace(textBox.Text))
                 {
-                    text_to_send = textBox1.Text;
+                    text_to_send = textBox.Text;
                     if (!dataSender.IsBusy)
                         dataSender.RunWorkerAsync();
                 }
-                textBox1.Text = "";
+                textBox.Text = "";
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button_retrieve_file_Click(object sender, EventArgs e)
         {
             openFileDialog1.InitialDirectory = "c:\\";
             openFileDialog1.Filter = "png files (*.png)|*.png";

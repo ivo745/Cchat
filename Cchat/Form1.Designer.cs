@@ -43,13 +43,13 @@
             this.dataReceiver = new System.ComponentModel.BackgroundWorker();
             this.dataSender = new System.ComponentModel.BackgroundWorker();
             this.button_disconnect = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox = new System.Windows.Forms.TextBox();
             this.chatBox = new System.Windows.Forms.TextBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.button_retrieve_file = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button2 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // button_start
@@ -132,18 +132,18 @@
             this.button_disconnect.UseVisualStyleBackColor = true;
             this.button_disconnect.Click += new System.EventHandler(this.button_disconnect_Click);
             // 
-            // textBox1
+            // textBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 509);
-            this.textBox1.MaxLength = 100;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(248, 20);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
+            this.textBox.Location = new System.Drawing.Point(12, 509);
+            this.textBox.MaxLength = 100;
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(248, 20);
+            this.textBox.TabIndex = 3;
+            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             // 
             // chatBox
             // 
-            this.chatBox.Location = new System.Drawing.Point(12, 382);
+            this.chatBox.Location = new System.Drawing.Point(12, 384);
             this.chatBox.MaxLength = 1024;
             this.chatBox.Multiline = true;
             this.chatBox.Name = "chatBox";
@@ -152,24 +152,23 @@
             this.chatBox.Size = new System.Drawing.Size(273, 119);
             this.chatBox.TabIndex = 12;
             // 
-            // pictureBox1
+            // pictureBox
             // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 201);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(273, 227);
-            this.pictureBox1.TabIndex = 14;
-            this.pictureBox1.TabStop = false;
+            this.pictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox.Location = new System.Drawing.Point(12, 148);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(273, 230);
+            this.pictureBox.TabIndex = 14;
+            this.pictureBox.TabStop = false;
             // 
-            // button1
+            // button_retrieve_file
             // 
-            this.button1.Location = new System.Drawing.Point(266, 509);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(19, 20);
-            this.button1.TabIndex = 15;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button_retrieve_file.Location = new System.Drawing.Point(266, 509);
+            this.button_retrieve_file.Name = "button_retrieve_file";
+            this.button_retrieve_file.Size = new System.Drawing.Size(19, 20);
+            this.button_retrieve_file.TabIndex = 15;
+            this.button_retrieve_file.UseVisualStyleBackColor = true;
+            this.button_retrieve_file.Click += new System.EventHandler(this.button_retrieve_file_Click);
             // 
             // openFileDialog1
             // 
@@ -177,12 +176,14 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(233, 344);
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(208, 303);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(52, 32);
             this.button2.TabIndex = 16;
             this.button2.Text = "Restart";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // Form1
@@ -191,21 +192,21 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(297, 541);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.button_retrieve_file);
+            this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.chatBox);
             this.Controls.Add(this.button_disconnect);
             this.Controls.Add(this.connectServerIPBox);
             this.Controls.Add(this.connectServerPortBox);
             this.Controls.Add(this.startServerPortBox);
             this.Controls.Add(this.startServerIPBox);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.button_connect);
             this.Controls.Add(this.button_start);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Cchat";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -221,10 +222,10 @@
         private System.ComponentModel.BackgroundWorker dataReceiver;
         private System.ComponentModel.BackgroundWorker dataSender;
         private System.Windows.Forms.Button button_disconnect;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.TextBox chatBox;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.Button button_retrieve_file;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button2;
     }
