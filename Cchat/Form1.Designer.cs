@@ -21,6 +21,7 @@
                 client.Close();
                 binaryReader.Dispose();
                 binaryWriter.Dispose();
+                cefSettings.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -154,13 +155,11 @@
             // pictureBox1
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Enabled = false;
             this.pictureBox1.Location = new System.Drawing.Point(12, 201);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(273, 227);
             this.pictureBox1.TabIndex = 14;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
             // 
             // button1
             // 

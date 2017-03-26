@@ -23,7 +23,6 @@ namespace Cchat
         private const string MSG_PREFIX_RECEIVER = "sender: ";
         //private static string MSG_IMAGE_DECODE_TIME = "Decoded image in: {0} ms.";
         //private static string MSG_ERROR_IMG_SIZE = "Image is too large.";
-
         //private static int MAX_IMG_SIZE = 1000000;
 
         private TcpClient client;
@@ -44,12 +43,14 @@ namespace Cchat
         private const int WM_VSCROLL = 0x115;
         private const int SB_BOTTOM = 7;
 
-        public ChromiumWebBrowser browser;
+        private ChromiumWebBrowser browser;
+        private CefSettings cefSettings;
 
         // Create browser instance
         public void InitBrowser()
         {
-            Cef.Initialize(new CefSettings());
+            cefSettings = new CefSettings();
+            Cef.Initialize(cefSettings);
             browser = new ChromiumWebBrowser(@"C:\Users\Ivo\Documents\Cchat\game.html");
             this.Controls.Add(browser);
             browser.Dock = DockStyle.None;
@@ -61,7 +62,7 @@ namespace Cchat
         public Form1()
         {
             InitializeComponent();
-            InitBrowser();
+            //InitBrowser();
 
             CchatLog.CreateLog();
             PrintLog(20);
@@ -98,12 +99,12 @@ namespace Cchat
         // Print image to picturebox
         private void PrintImage(Image image)
         {
+            // Clean up memory of old image
             if (pictureBox1.Image != null)
             {
                 pictureBox1.Image.Dispose();
                 pictureBox1.Image = null;
             }
-            image_to_send = null;
             pictureBox1.Image = image;
         }
 
@@ -191,17 +192,22 @@ namespace Cchat
             Disconnect();
         }
 
-        // 
         private void InterpetData(string data)
         {
-            int length;
-            if (int.TryParse(data, out length))
+            // Check what type of data we have
+            dynamic type = DataType(data);
+            if (type == typeof(int))
             {
+                // Retrieve buffer length
+                int length = int.Parse(data);
+                // Retrieve bytes from data stream
                 byte[] bytes = binaryReader.ReadBytes(length);
-                CchatImage.DecodeImageFromStream(bytes);
+                // Insert and convert bytes back to Image
+                CchatImage.ConvertBytesToImage(bytes);
+                // Retrieve the Image
                 PrintImage(CchatImage.GetImage());
             }
-            else
+            else if (type == typeof(string))
             {
                 if (data.Contains("sender:"))
                 {
@@ -215,6 +221,26 @@ namespace Cchat
                     return;
                 }
             }
+        }
+
+        private static bool IsNumeric(object Expression)
+        {
+            double retNum;
+
+            bool isNum = double.TryParse(Convert.ToString(Expression, NumberFormatInfo.InvariantInfo), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out retNum);
+            return isNum;
+        }
+
+        private static Type DataType(object data)
+        {
+            if (IsNumeric(data))
+            {
+                return typeof(int);
+            }
+            else if (data is string)
+                return typeof(string);
+
+            return null;
         }
 
         private void dataReceiver_DoWork(object sender, DoWorkEventArgs e)
@@ -238,19 +264,31 @@ namespace Cchat
             {
                 if (image_to_send != null)
                 {
-                    CchatImage.EncodeImage(image_to_send);
+                    // Convert Image to bytes
+                    CchatImage.ConvertImageToBytes(image_to_send);
+                    // Store length of the byte array of the Image
                     string imageLength = "" + CchatImage.GetImageData().Length;
+                    // Send the length
                     streamWriter.WriteLine(imageLength);
+                    // Send the Image
                     binaryWriter.Write(CchatImage.GetImageData(), 0, CchatImage.GetImageData().Length);
+                    // Show Image to self
                     PrintImage(image_to_send);
+                    // Clean up old image to send
+                    image_to_send = null;
+                    // Wait before sending next
                     Thread.Sleep(1000);
                 }
 
                 if (text_to_send != null)
                 {
+                    // Send text written in the textbox
                     streamWriter.WriteLine(MSG_PREFIX_RECEIVER + text_to_send);
+                    // Show text written to self
                     PrintText(MSG_PREFIX_SENDER + text_to_send);
+                    // Store text written in textbox to log
                     CchatLog.WriteToLog(MSG_PREFIX_SENDER + text_to_send);
+                    // Clean up old text to send
                     text_to_send = null;
                 }
             }

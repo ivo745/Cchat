@@ -58,6 +58,7 @@ namespace Cchat
         {
             if (Image == null)
                 throw new ArgumentNullException(null);
+
             return Image;
         }
 
@@ -67,10 +68,11 @@ namespace Cchat
         {
             if (ImageData == null)
                 throw new ArgumentNullException(null);
+
             return (byte[])ImageData.Clone();
         }
 
-        public static void EncodeImage(Image image)
+        public static void ConvertImageToBytes(Image image)
         {
             if (image == null)
                 return;
@@ -83,10 +85,10 @@ namespace Cchat
             }
         }
 
-        public static void DecodeImageFromStream(byte[] data)
+        public static void ConvertBytesToImage(byte[] data)
         {
             if (data == null)
-                throw new ArgumentNullException(null);
+                throw new ArgumentNullException("data");
 
             using (MemoryStream ms = new MemoryStream())
             {
