@@ -83,16 +83,11 @@ namespace Cchat
         {
             // Store all lins of the log file
             string[] log = CchatLog.ReadFromLog();
-            // Set counter by certain amount of lines before end of log
-            int lineCounter = log.Length - lines - 1;
-            // 
-            for (int i = 0; i < log.Length; i++)
+
+            // Iterate through last set of lines until end of log
+            for (int i = log.Length - lines - 1; i < log.Length; i++)
             {
-                lineCounter++;
-                if (lineCounter < log.Length)
-                {
-                    chatBox.AppendText(log.ElementAt(lineCounter) + "\r\n");
-                }
+                chatBox.AppendText(log.ElementAt(i) + "\r\n");
             }
         }
 
