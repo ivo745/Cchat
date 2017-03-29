@@ -5,20 +5,18 @@ namespace Cchat
 {
     public static class CchatLog
     {
-        private static string Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Cchat");
-
         private const string MSG_WELCOME = "Welcome!";
 
         public static void CreateLog()
         {
-            Directory.CreateDirectory(Path);
+            Directory.CreateDirectory(Form1.Path);
 
-            if (!File.Exists(Path + "\\log"))
+            if (!File.Exists(Form1.Path + "\\log"))
             {
-                File.Create(Path + "\\log").Close();
+                File.Create(Form1.Path + "\\log").Close();
             }
 
-            if (new FileInfo(Path + "\\log").Length == 0)
+            if (new FileInfo(Form1.Path + "\\log").Length == 0)
             {
                 WriteToLog(MSG_WELCOME);
             }
@@ -26,7 +24,7 @@ namespace Cchat
 
         public static void WriteToLog(string text)
         {
-            using (StreamWriter w = File.AppendText(Path + "\\log"))
+            using (StreamWriter w = File.AppendText(Form1.Path + "\\log"))
             {
                 w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
                 w.WriteLine("{0}", text);
@@ -36,7 +34,7 @@ namespace Cchat
         // Store all lines of the log file
         public static string[] ReadFromLog()
         {
-            string[] lines = File.ReadAllLines(Path + "\\log");
+            string[] lines = File.ReadAllLines(Form1.Path + "\\log");
             return lines;
         }
     }

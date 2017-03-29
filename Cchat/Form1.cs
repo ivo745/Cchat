@@ -11,11 +11,14 @@ using System.Threading;
 using System.Globalization;
 using CefSharp;
 using CefSharp.WinForms;
+using System.Drawing.Imaging;
 
 namespace Cchat
 {
     public partial class Form1 : Form
     {
+        public static string Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Cchat");
+
         private const string MSG_DISCONNECT = "Disconnected from server.";
         private const string MSG_CONNECT = "Connected to server";
         private const string MSG_ERROR_SEND_DATA = "Send failed!";
@@ -46,7 +49,9 @@ namespace Cchat
         private ChromiumWebBrowser browser;
         private CefSettings cefSettings;
 
-        // Create browser instance
+        /// <summary>
+        /// Create browser instance.
+        /// </summary>
         private void InitBrowser()
         {
             cefSettings = new CefSettings();
@@ -58,7 +63,9 @@ namespace Cchat
             browser.Size = new Size(250, 250);
         }
 
-        // Create application instance
+        /// <summary>
+        /// Create application instance.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
@@ -72,13 +79,17 @@ namespace Cchat
             connectServerPortBox.Text = CchatConnectionInfo.GetPort();
         }
 
-        // Scroll textbox to bottom
+        /// <summary>
+        /// Scroll textbox to bottom.
+        /// </summary>
         private static void ScrollToBottom(TextBox tb)
         {
             NativeMethods.SendMessage(tb.Handle, WM_VSCROLL, (UIntPtr)SB_BOTTOM, IntPtr.Zero);
         }
 
-        // Print text stored in log file to chat window
+        /// <summary>
+        /// Print text stored in log file to chat window.
+        /// </summary>
         private void PrintLog(int lines)
         {
             // Store all lins of the log file
@@ -91,7 +102,9 @@ namespace Cchat
             }
         }
 
-        // Print image to picturebox
+        /// <summary>
+        /// Print image to picturebox.
+        /// </summary>
         private void PrintImage(Image image)
         {
             // Clean up memory of old image
@@ -103,7 +116,9 @@ namespace Cchat
             pictureBox.Image = image;
         }
 
-        // Print text written in textbox to chat window
+        /// <summary>
+        /// Print text written in textbox to chat window.
+        /// </summary>
         private void PrintText(string text)
         {
             // Exclude commands from displaying
@@ -116,7 +131,9 @@ namespace Cchat
             });
         }
 
-        // Disconnent server or client
+        /// <summary>
+        /// Disconnent server or client.
+        /// </summary>
         private void Disconnect()
         {
             streamWriter.WriteLine("/disconnect");
@@ -130,7 +147,9 @@ namespace Cchat
             dataSender.Dispose();
         }
 
-        // Button to start server
+        /// <summary>
+        /// Button to start server.
+        /// </summary>
         private void button_start_Click(object sender, EventArgs e)
         {
             try
@@ -152,7 +171,9 @@ namespace Cchat
             }
         }
 
-        // button to connect client to server 
+        /// <summary>
+        /// button to connect client to server.
+        /// </summary>
         private void button_connect_Click(object sender, EventArgs e)
         {
             try
@@ -178,7 +199,9 @@ namespace Cchat
             }
         }
 
-        // Button to disconnect server or client
+        /// <summary>
+        /// Button to disconnect server or client.
+        /// </summary>
         private void button_disconnect_Click(object sender, EventArgs e)
         {
             if (client == null)
@@ -187,7 +210,9 @@ namespace Cchat
             Disconnect();
         }
 
-        // Return wether the input of size int contains only numbers
+        /// <summary>
+        /// Returns wether the specified object contains only numbers.
+        /// </summary>
         private static bool IsNumeric(object input)
         {
             int retNum;
@@ -196,8 +221,10 @@ namespace Cchat
             return isNum;
         }
 
-        // Return the type of data
-        private static Type DataType(object data)
+        /// <summary>
+        /// Gets the type of the specified object.
+        /// </summary>
+        private static Type GetDataType(object data)
         {
             if (IsNumeric(data))
             {
@@ -209,11 +236,13 @@ namespace Cchat
             return null;
         }
 
-        // Determine type of data received and retrieve the information sent for display
+        /// <summary>
+        /// Determine type of data received and retrieve the information sent for display.
+        /// </summary>
         private void InterpetData(string data)
         {
             // Check what type of data we have
-            dynamic type = DataType(data);
+            dynamic type = GetDataType(data);
 
             if (type == typeof(int))
             {
@@ -223,6 +252,7 @@ namespace Cchat
                 byte[] bytes = binaryReader.ReadBytes(length);
                 // Convert bytes to image and display it
                 PrintImage(CchatImage.GetImageFromByteArray(bytes));
+                //pictureBox.Image.Save(Path + "\\Images", ImageFormat.Png);
             }
             else if (type == typeof(string))
             {

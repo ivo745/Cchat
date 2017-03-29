@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,16 +9,6 @@ namespace Cchat
 {
     public static class CchatImage
     {
-        private enum ImageFormat
-        {
-            Bmp,
-            Jpeg,
-            Gif,
-            Tiff,
-            Png,
-            Unknown
-        }
-
         private static ImageFormat GetImageFormat(byte[] value)
         {
             var png = new byte[] { 137, 80, 78, 71 };
@@ -25,7 +16,7 @@ namespace Cchat
             if (png.SequenceEqual(value.Take(png.Length)))
                 return ImageFormat.Png;
 
-            return ImageFormat.Unknown;
+            return null;
         }
 
         public static byte[] GetByteArrayFromImage(Image image)
@@ -52,7 +43,6 @@ namespace Cchat
                 {
                     return Image.FromStream(ms, true, true);
                 }
-
                 return null;
             }
         }
